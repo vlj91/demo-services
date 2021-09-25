@@ -1,0 +1,60 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tasks
+  namespace: api
+  labels:
+    app: tasks
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tasks
+  template:
+    metadata:
+      labels:
+        app: tasks
+    spec:
+      serviceAccountName: tasks
+      containers:
+      - name: app
+        image: ghcr.io/vlj91/tasks:latest
+        ports:
+          - containerPort: 3000
+        livenessProbe:
+          httpGet:
+            path: /healthcheck
+            port: 3000
+          initialDelaySeconds: 0
+          periodSeconds: 10
+          timeoutSeconds: 1
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /healthcheck
+            port: 3000
+          successThreshold: 3
+        env:
+          - name: USERS_BASE_URL
+            value: "http://users.api.svc.cluster.local:3000"
+          - name: EVENTS_BASE_URL
+            value: "http://events.api.svc.cluster.local:3000"
+          - name: CATEGORIES_BASE_URL
+            value: "http://categories.api.svc.cluster.local:3000"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: tasks
+  namespace: api
+  labels:
+    app: tasks
+spec:
+  type: LoadBalancer
+  ports:
+    - name: "http"
+      port: 3000
+      targetPort: 3000
+  selector:
+    app: tasks

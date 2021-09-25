@@ -1,0 +1,56 @@
+---
+apiVersion: api/v1
+kind: Deployment
+metadata:
+  name: users
+  namespace: api
+  labels:
+    app: users
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: users
+  template:
+    metadata:
+      labels:
+        app: users
+    spec:
+      serviceAccountName: users
+      containers:
+      - name: app
+        image: ghcr.io/vlj91/users:latest
+        ports:
+          - containerPort: 3000
+        livenessProbe:
+          httpGet:
+            path: /healthcheck
+            port: 3000
+          initialDelaySeconds: 0
+          periodSeconds: 10
+          timeoutSeconds: 1
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /healthcheck
+            port: 3000
+          successThreshold: 3
+        env:
+          - name: EVENTS_BASE_URL
+            value: "http://events.api.svc.cluster.local:3000/"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: users
+  namespace: api
+  labels:
+    app: users
+spec:
+  type: LoadBalancer
+  ports:
+    - name: "http"
+      port: 3000
+      targetPort: 3000
+  selector:
+    app: users
