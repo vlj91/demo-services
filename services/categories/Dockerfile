@@ -1,5 +1,5 @@
 FROM ruby:3.0.2
-LABEL org.opencontainers.image.source https://github.com/vlj91/demo-svc-categories
+LABEL org.opencontainers.image.source https://github.com/vlj91/demo-services
 WORKDIR /app
 COPY . /app
 RUN bundle install
