@@ -1,0 +1,23 @@
+name: Docker images
+
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Log in to Github Container Registry
+        run: echo $CR_PAT | docker login ghcr.io -u vlj91 --password-stdin
+        env:
+          CR_PAT: ${{ secrets.CR_PAT }}
+      - name: Build and push images
+        run: |
+          for service in categories events tasks users; do
+            pushd services/$service
+            docker build -t ghcr.io/vlj91/${service}:latest .
+            docker push ghcr.io/vlj91/${service}:latest
+            popd
+          done
