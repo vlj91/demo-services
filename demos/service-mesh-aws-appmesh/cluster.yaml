@@ -1,0 +1,90 @@
+---
+apiVersion: eksctl.io/v1alpha5
+kind: ClusterConfig
+
+metadata:
+  name: app-mesh-poc
+  region: ap-southeast-2
+  version: "1.21"
+
+managedNodeGroups:
+- name: spot
+  instanceTypes: ["c5.large"]
+  spot: true
+  desiredCapacity: 1
+
+iam:
+  withOIDC: true
+  serviceAccounts:
+  - metadata:
+      name: external-dns
+      namespace: kube-system
+    wellKnownPolicies:
+      externalDNS: true
+  - metadata:
+      name: appmesh-controller
+      namespace: appmesh-system
+      labels: {aws-usage: "appmesh"}
+    attachPolicyARNs:
+      - "arn:aws:iam::aws:policy/AWSCloudMapFullAccess"
+      - "arn:aws:iam::aws:policy/AWSAppMeshFullAccess"
+  - metadata:
+      name: gateway
+      namespace: api
+    attachPolicyARNs:
+      - "arn:aws:iam::aws:policy/AWSAppMeshEnvoyAccess"
+      - "arn:aws:iam::aws:policy/AWSCloudMapDiscoverInstanceAccess"
+      - "arn:aws:iam::aws:policy/AWSAppMeshFullAccess"
+      - "arn:aws:iam::aws:policy/AWSCloudMapFullAccess"
+      - "arn:aws:iam::aws:policy/AWSXRayFullAccess"
+      - "arn:aws:iam::aws:policy/CloudWatchLogsFullAccess"
+      - "arn:aws:iam::aws:policy/AWSCertificateManagerPrivateCAFullAccess"
+      - "arn:aws:iam::aws:policy/AWSCertificateManagerFullAccess"
+  - metadata:
+      name: tasks
+      namespace: api
+    attachPolicyARNs:
+      - "arn:aws:iam::aws:policy/AWSAppMeshEnvoyAccess"
+      - "arn:aws:iam::aws:policy/AWSCloudMapDiscoverInstanceAccess"
+      - "arn:aws:iam::aws:policy/AWSAppMeshFullAccess"
+      - "arn:aws:iam::aws:policy/AWSCloudMapFullAccess"
+      - "arn:aws:iam::aws:policy/AWSXRayFullAccess"
+      - "arn:aws:iam::aws:policy/CloudWatchLogsFullAccess"
+      - "arn:aws:iam::aws:policy/AWSCertificateManagerPrivateCAFullAccess"
+      - "arn:aws:iam::aws:policy/AWSCertificateManagerFullAccess"
+  - metadata:
+      name: categories
+      namespace: api
+    attachPolicyARNs:
+      - "arn:aws:iam::aws:policy/AWSAppMeshEnvoyAccess"
+      - "arn:aws:iam::aws:policy/AWSCloudMapDiscoverInstanceAccess"
+      - "arn:aws:iam::aws:policy/AWSAppMeshFullAccess"
+      - "arn:aws:iam::aws:policy/AWSCloudMapFullAccess"
+      - "arn:aws:iam::aws:policy/AWSXRayFullAccess"
+      - "arn:aws:iam::aws:policy/CloudWatchLogsFullAccess"
+      - "arn:aws:iam::aws:policy/AWSCertificateManagerPrivateCAFullAccess"
+      - "arn:aws:iam::aws:policy/AWSCertificateManagerFullAccess"
+  - metadata:
+      name: users
+      namespace: api
+    attachPolicyARNs:
+      - "arn:aws:iam::aws:policy/AWSAppMeshEnvoyAccess"
+      - "arn:aws:iam::aws:policy/AWSCloudMapDiscoverInstanceAccess"
+      - "arn:aws:iam::aws:policy/AWSAppMeshFullAccess"
+      - "arn:aws:iam::aws:policy/AWSCloudMapFullAccess"
+      - "arn:aws:iam::aws:policy/AWSXRayFullAccess"
+      - "arn:aws:iam::aws:policy/CloudWatchLogsFullAccess"
+      - "arn:aws:iam::aws:policy/AWSCertificateManagerPrivateCAFullAccess"
+      - "arn:aws:iam::aws:policy/AWSCertificateManagerFullAccess"
+  - metadata:
+      name: events
+      namespace: api
+    attachPolicyARNs:
+      - "arn:aws:iam::aws:policy/AWSAppMeshEnvoyAccess"
+      - "arn:aws:iam::aws:policy/AWSCloudMapDiscoverInstanceAccess"
+      - "arn:aws:iam::aws:policy/AWSAppMeshFullAccess"
+      - "arn:aws:iam::aws:policy/AWSCloudMapFullAccess"
+      - "arn:aws:iam::aws:policy/AWSXRayFullAccess"
+      - "arn:aws:iam::aws:policy/CloudWatchLogsFullAccess"
+      - "arn:aws:iam::aws:policy/AWSCertificateManagerPrivateCAFullAccess"
+      - "arn:aws:iam::aws:policy/AWSCertificateManagerFullAccess"
